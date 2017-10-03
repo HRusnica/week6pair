@@ -89,8 +89,8 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 
 	@Override
 	public void changeEmployeeDepartment(Long employeeId, Long departmentId) {
-		String mySearch = "UPDATE department_id SET department d JOIN employee e ON e.department_id = d.department_id WHERE department_id = ? AND employee_id = ? ";
-		SqlRowSet employeeRowSet = jdbcTemplate.queryForRowSet(mySearch, departmentId, employeeId);
+		String mySearch = "UPDATE employee SET department_id = ? WHERE employee_id = ?";
+		jdbcTemplate.update(mySearch, departmentId, employeeId);
 		
 	}
 	

@@ -3,6 +3,8 @@ package com.techelevator.projects.model.jdbc;
 import static org.junit.Assert.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,17 +13,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+
+import com.techelevator.projects.model.Department;
 
 
-public class JDBCDepartmentDAO {
+public class JDBCDepartmentDAOtest {
 
 	private static SingleConnectionDataSource dataSource;
 	private JDBCDepartmentDAO dao;
 	private JdbcTemplate jdbcTemplate;
 	
-	public JDBCDepartmentDAO(SingleConnectionDataSource dataSource2) {
-		// TODO Auto-generated constructor stub
-	}
+
 
 	@BeforeClass
 	public static void setupDataSource() {
@@ -59,27 +62,68 @@ public class JDBCDepartmentDAO {
 	}
 	@Test
 	public void testGetAllDepartments() {
-		fail("Not yet implemented");
+		int numOfExistingDept = dao.getAllDepartments().size();
+		String deptName = "MY NEW TEST DEPT";
+		Department newDept = dao.createDepartment(deptName);
+		String deptName2 = "THE SECOND ONE";
+		Department newDept2 = dao.createDepartment(deptName2);
+		
+		List<Department> deptList = dao.getAllDepartments();
+
+		assertNotNull(deptList);
+		assertEquals(deptList.size(), 2 + numOfExistingDept);
+		
 	}
 
 	@Test
 	public void testSearchDepartmentsByName() {
-		fail("Not yet implemented");
+		//Arrange
+		String departmentName = "testDeptName";
+		Department myDepartment = dao.createDepartment(departmentName);
+		//Act
+		List<Department> departments = dao.searchDepartmentsByName(departmentName);
+		//Assert
+		assertNotNull(departments);
+		assertEquals(1, departments.size());
+		assertEquals(myDepartment.getId(), departments.get(0).getId());
 	}
 
 	@Test
 	public void testUpdateDepartmentName() {
-		fail("Not yet implemented");
+		//Arrange
+		Department myDepartment = dao.createDepartment("departmentName");
+		//Act
+		dao.updateDepartmentName(myDepartment.getId(), "newName");
+		myDepartment = dao.getDepartmentById(myDepartment.getId());
+		//Assert
+		assertEquals("newName", myDepartment.getName());
 	}
 
 	@Test
 	public void testCreateDepartment() {
-		Department newDept = 
+		String deptName = "MY NEW TEST DEPT";
+		Department newDept = dao.createDepartment(deptName);
+		
+		assertNotNull(newDept);
+		SqlRowSet results =jdbcTemplate.queryForRowSet("SELECT * FROM department");
+		assertTrue("There were no departments in the database", results.next());
+		assertEquals(deptName, results.getString("name"));
+		assertEquals(newDept.getId(), (Long)results.getLong("department_id"));
+		assertFalse("Too many rows", results.next());
 	}
 
 	@Test
 	public void testGetDepartmentById() {
-		fail("Not yet implemented");
+		//Arrange
+		Department myDept = dao.createDepartment("deptName");
+		//Act
+		Department dudeSweet = dao.getDepartmentById(myDept.getId());
+		//Assert
+		assertNotNull(myDept.getId());
+		assertEquals("deptName", dudeSweet.getName());
+		
+		
+				
 	}
 
 }
