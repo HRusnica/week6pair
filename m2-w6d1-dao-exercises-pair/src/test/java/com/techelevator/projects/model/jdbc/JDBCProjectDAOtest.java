@@ -68,14 +68,41 @@ public class JDBCProjectDAOtest {
 	@Test
 	public void testGetAllActiveProjects() {
 		//Arrange
-		String sqlInsertProject = "INSERT INTO project (name) VALUES ('test')";
+		String sqlInsertProject = "INSERT INTO project (name) VALUES ('testProject')";
 		jdbcTemplate.update(sqlInsertProject);
 		//Act
 		dao.getAllActiveProjects();
-		String testProjectName = dao.getAllActiveProjects().;
+		List<Project> activeProjects = new ArrayList<>();
+		activeProjects.addAll(dao.getAllActiveProjects());
 		//Assert
 		assertNotNull(dao.getAllActiveProjects());
-		assertEquals()
+		assertEquals("testProject", activeProjects.get(0).getName());
+	}
+	
+	@Test
+	public void testGetAllActiveProjectsWhereEndDateOutOfRange() {
+		//Arrange
+		String sqlInsertProject = "INSERT INTO project (name, to_date) VALUES ('testProject', '2010-05-05')";
+		jdbcTemplate.update(sqlInsertProject);
+		//Act
+		dao.getAllActiveProjects();
+		List<Project> activeProjects = new ArrayList<>();
+		activeProjects.addAll(dao.getAllActiveProjects());
+		//Assert
+		assertTrue(activeProjects.size() < 1);
+	}
+	
+	@Test
+	public void testGetAllActiveProjectsWhereStartDateOutOfRange() {
+		//Arrange
+		String sqlInsertProject = "INSERT INTO project (name, from_date) VALUES ('testProject', '2020-05-05')";
+		jdbcTemplate.update(sqlInsertProject);
+		//Act
+		dao.getAllActiveProjects();
+		List<Project> activeProjects = new ArrayList<>();
+		activeProjects.addAll(dao.getAllActiveProjects());
+		//Assert
+		assertTrue(activeProjects.size() < 1);
 	}
 
 	@Test

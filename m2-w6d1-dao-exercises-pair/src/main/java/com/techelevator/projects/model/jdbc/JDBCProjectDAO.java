@@ -24,7 +24,8 @@ public class JDBCProjectDAO implements ProjectDAO {
 	public List<Project> getAllActiveProjects() {
 		String activeProject = "SELECT * FROM project WHERE (to_date > now() AND from_date < now()) "
 				+ "OR (from_date < now() AND to_date IS NULL) "
-				+ "OR (to_date > now() AND from_date IS NULL)";
+				+ "OR (to_date > now() AND from_date IS NULL)"
+				+ "OR (to_date IS NULL AND from_date IS NULL)";
 		SqlRowSet projectRowSet = jdbcTemplate.queryForRowSet(activeProject);
 		List<Project> projectList = new ArrayList<>();
 		while(projectRowSet.next()){
