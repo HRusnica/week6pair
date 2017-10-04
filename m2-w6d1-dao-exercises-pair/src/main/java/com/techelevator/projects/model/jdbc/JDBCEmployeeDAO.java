@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import com.techelevator.projects.model.Department;
 import com.techelevator.projects.model.Employee;
 import com.techelevator.projects.model.EmployeeDAO;
+import com.techelevator.projects.model.Project;
 
 public class JDBCEmployeeDAO implements EmployeeDAO {
 
@@ -92,6 +93,17 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 		String mySearch = "UPDATE employee SET department_id = ? WHERE employee_id = ?";
 		jdbcTemplate.update(mySearch, departmentId, employeeId);
 		
+	}
+	
+	public Employee makeNewEmployee(String firstName, String lastName, Date() birthDay, String gender, Date() hire){
+		String myAddition = "INSERT INTO employee (first_name, last_name, birth_date, gender, hire_date)"
+				+ "VALUES(?, ?, ?, ?, ?)";
+		jdbcTemplate.update(myAddition, firstName, lastName, birth, gender, hire);
+		String myEmployeeQuery = "SELECT * FROM employee WHERE first_name = ?, last_name = ?";
+		SqlRowSet employeeRowSet = jdbcTemplate.queryForRowSet(myEmployeeQuery, firstName, lastName);
+		Employee myEmployee = new Employee();
+		myEmployee = mapRowToProject(employeeRowSet);
+		return myEmployee;
 	}
 	
 	public Employee mapRowtoDept(SqlRowSet employeeRowSet){

@@ -30,7 +30,7 @@ public class JDBCProjectDAO implements ProjectDAO {
 		List<Project> projectList = new ArrayList<>();
 		while(projectRowSet.next()){
 			Project myProject = new Project();
-			myProject = mapRowtoProject(projectRowSet);
+			myProject = mapRowToProject(projectRowSet);
 			projectList.add(myProject);
 		}
 		return projectList;
@@ -49,7 +49,18 @@ public class JDBCProjectDAO implements ProjectDAO {
 		jdbcTemplate.update(myAddition, projectId, employeeId);
 	}
 
-	public Project mapRowtoProject(SqlRowSet projectRowSet){
+	public Project makeNewProject(String projectName){
+		String myAddition = "INSERT INTO project (name)"
+				+ "VALUES(?)";
+		jdbcTemplate.update(myAddition, projectName);
+		String myProjectQuery = "SELECT * FROM project WHERE name = ?";
+		SqlRowSet projectRowSet = jdbcTemplate.queryForRowSet(myProjectQuery, projectName);
+		Project myProject = new Project();
+		myProject = mapRowToProject(projectRowSet);
+		return myProject;
+	}
+	
+	public Project mapRowToProject(SqlRowSet projectRowSet){
 		Project myProject = new Project();
 		myProject.setId(projectRowSet.getLong("project_id"));
 		myProject.setName(projectRowSet.getString("name"));

@@ -19,6 +19,7 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.techelevator.projects.model.Department;
+import com.techelevator.projects.model.Employee;
 import com.techelevator.projects.model.Project;
 
 
@@ -107,12 +108,36 @@ public class JDBCProjectDAOtest {
 
 	@Test
 	public void testRemoveEmployeeFromProject() {
+		//Arrange
+		
+		//Act
+		
+		//Assert
 		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testAddEmployeeToProject() {
-		fail("Not yet implemented");
+		//Arrange
+		Project myProject = dao.makeNewProject("testProject");
+		String sqlInsertEmployee = "INSERT INTO employee (first_name, last_name, birth_date, gender, hire_date)"
+				+ "VALUES(?, ?, ?, ?, ?)";
+		jdbcTemplate.update(sqlInsertEmployee, "Michael", "Smith", 1990-01-01, 'M', 2004-01-01);
+		String myEmployeeQuery = "SELECT * FROM employee WHERE first_name = ?, last_name = ?";
+		SqlRowSet employeeRowSet = jdbcTemplate.queryForRowSet(myEmployeeQuery, "Michael", "Smith");
+		Employee myEmployee = new Employee();
+		myEmployee.setId(employeeRowSet.getLong("employee_id"));
+		myEmployee.setDepartmentId(employeeRowSet.getLong("department_id"));
+		myEmployee.setFirstName(employeeRowSet.getString("first_name"));
+		myEmployee.setLastName(employeeRowSet.getString("last_name"));
+		myEmployee.setBirthDay(employeeRowSet.getDate("birth_date").toLocalDate());
+		myEmployee.setGender(employeeRowSet.getString("gender").charAt(0));
+		myEmployee.setHireDate(employeeRowSet.getDate("hire_date").toLocalDate());
+
+		//Act
+		dao.addEmployeeToProject(myProject.getId() , myEmployee.getId());
+		//Assert
+		assertNotNull()
 	}
 
 }
