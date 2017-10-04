@@ -8,7 +8,7 @@ public class Employee {
 	private String firstName;
 	private String lastName;
 	private LocalDate birthDay;
-	private char gender;
+	private String gender;
 	private LocalDate hireDate;
 	
 	public Long getId() {
@@ -41,10 +41,10 @@ public class Employee {
 	public void setBirthDay(LocalDate birthDay) {
 		this.birthDay = birthDay;
 	}
-	public char getGender() {
+	public String getGender() {
 		return gender;
 	}
-	public void setGender(char gender) {
+	public void setGender(String gender) {
 		this.gender = gender;
 	}
 	public LocalDate getHireDate() {

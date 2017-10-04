@@ -137,7 +137,7 @@ public class JDBCProjectDAOtest {
 		//Act
 		dao.addEmployeeToProject(myProject.getId() , myEmployee.getId());
 		//Assert
-		assertNotNull()
+		assertNotNull();
 	}
 
 }

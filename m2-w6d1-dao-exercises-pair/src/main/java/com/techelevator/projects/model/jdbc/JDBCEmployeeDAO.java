@@ -1,6 +1,8 @@
 package com.techelevator.projects.model.jdbc;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -28,7 +30,7 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 		List<Employee> allEmployee = new ArrayList<>();
 		while(employeeRowSet.next()){
 			Employee ourEmployee = new Employee();
-			ourEmployee = mapRowtoDept(employeeRowSet);
+			ourEmployee = mapRowToEmployee(employeeRowSet);
 			allEmployee.add(ourEmployee);
 		}
 		
@@ -42,7 +44,7 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 		List<Employee> allEmployee = new ArrayList<>();
 		while(employeesRowSet.next()){
 			Employee matchEmployee = new Employee();
-			matchEmployee = mapRowtoDept(employeesRowSet);
+			matchEmployee = mapRowToEmployee(employeesRowSet);
 			allEmployee.add(matchEmployee);
 		}
 		
@@ -56,7 +58,7 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 		List<Employee> allEmployee = new ArrayList<>();
 		while(employeesRowSet.next()){
 			Employee matchEmployee = new Employee();
-			matchEmployee = mapRowtoDept(employeesRowSet);
+			matchEmployee = mapRowToEmployee(employeesRowSet);
 			allEmployee.add(matchEmployee);
 		}
 		return allEmployee;
@@ -69,7 +71,7 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 		List<Employee> allEmployee = new ArrayList<>();
 		while(employeeRowSet.next()){
 			Employee matchEmployee = new Employee();
-			matchEmployee = mapRowtoDept(employeeRowSet);
+			matchEmployee = mapRowToEmployee(employeeRowSet);
 			allEmployee.add(matchEmployee);
 		}
 		return allEmployee;
@@ -77,12 +79,12 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 
 	@Override
 	public List<Employee> getEmployeesByProjectId(Long projectId) {
-		String mySearch = "SELECT * FROM employee e JOIN project_employee pe ON e.employee_id = pe.employee_id JOIN project p ON pe.project_id = p.project_id  WHERE project_id = ?";
+		String mySearch = "SELECT * FROM employee e JOIN project_employee pe ON e.employee_id = pe.employee_id JOIN project p ON pe.project_id = p.project_id  WHERE pe.project_id = ?";
 		SqlRowSet employeeRowSet = jdbcTemplate.queryForRowSet(mySearch, projectId);
 		List<Employee> allEmployee = new ArrayList<>();
 		while(employeeRowSet.next()){
 			Employee matchEmployee = new Employee();
-			matchEmployee = mapRowtoDept(employeeRowSet);
+			matchEmployee = mapRowToEmployee(employeeRowSet);
 			allEmployee.add(matchEmployee);
 		}
 		return allEmployee;
@@ -95,25 +97,31 @@ public class JDBCEmployeeDAO implements EmployeeDAO {
 		
 	}
 	
-	public Employee makeNewEmployee(String firstName, String lastName, Date() birthDay, String gender, Date() hire){
-		String myAddition = "INSERT INTO employee (first_name, last_name, birth_date, gender, hire_date)"
-				+ "VALUES(?, ?, ?, ?, ?)";
-		jdbcTemplate.update(myAddition, firstName, lastName, birth, gender, hire);
-		String myEmployeeQuery = "SELECT * FROM employee WHERE first_name = ?, last_name = ?";
-		SqlRowSet employeeRowSet = jdbcTemplate.queryForRowSet(myEmployeeQuery, firstName, lastName);
+	public Employee makeNewEmployee(String firstName, String lastName, LocalDate birthDate , String gender, LocalDate hireDate ){
 		Employee myEmployee = new Employee();
-		myEmployee = mapRowToProject(employeeRowSet);
+		myEmployee.setFirstName(firstName);
+		myEmployee.setLastName(lastName);
+		myEmployee.setBirthDay(birthDate);
+		myEmployee.setGender(gender);
+		myEmployee.setHireDate(hireDate);
+		String myAddition = "INSERT INTO employee (first_name, last_name, birth_date, gender, hire_date)"
+				+ "VALUES(?, ?, ?, ?, ?) RETURNING employee_id";
+		myEmployee.setId(jdbcTemplate.queryForObject(myAddition, Long.class, firstName, lastName, birthDate, gender, hireDate));
+//		String myEmployeeQuery = "SELECT * FROM employee WHERE first_name = ?, last_name = ?";
+//		SqlRowSet employeeRowSet = jdbcTemplate.queryForRowSet(myEmployeeQuery, firstName, lastName);
+		
+		
 		return myEmployee;
 	}
 	
-	public Employee mapRowtoDept(SqlRowSet employeeRowSet){
+	public Employee mapRowToEmployee(SqlRowSet employeeRowSet){
 		Employee employeeNew = new Employee();
 		employeeNew.setId(employeeRowSet.getLong("employee_id"));
 		employeeNew.setDepartmentId(employeeRowSet.getLong("department_id"));
 		employeeNew.setFirstName(employeeRowSet.getString("first_name"));
 		employeeNew.setLastName(employeeRowSet.getString("last_name"));
 		employeeNew.setBirthDay(employeeRowSet.getDate("birth_date").toLocalDate());
-		employeeNew.setGender(employeeRowSet.getString("gender").charAt(0));
+		employeeNew.setGender(employeeRowSet.getString("gender"));
 		employeeNew.setHireDate(employeeRowSet.getDate("hire_date").toLocalDate());
 		return employeeNew;
 	}

@@ -50,14 +50,12 @@ public class JDBCProjectDAO implements ProjectDAO {
 	}
 
 	public Project makeNewProject(String projectName){
-		String myAddition = "INSERT INTO project (name)"
-				+ "VALUES(?)";
-		jdbcTemplate.update(myAddition, projectName);
-		String myProjectQuery = "SELECT * FROM project WHERE name = ?";
-		SqlRowSet projectRowSet = jdbcTemplate.queryForRowSet(myProjectQuery, projectName);
-		Project myProject = new Project();
-		myProject = mapRowToProject(projectRowSet);
-		return myProject;
+		Project newProject = new Project();
+		newProject.setName(projectName);
+		
+		String myAddition = "INSERT INTO project (name) VALUES (?) RETURNING project_id";
+		newProject.setId((long)jdbcTemplate.queryForObject(myAddition, Long.class, projectName));
+		return newProject;
 	}
 	
 	public Project mapRowToProject(SqlRowSet projectRowSet){
